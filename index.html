@@ -415,10 +415,28 @@ async function load() {
   document.getElementById('sdot').className = 'save-dot saving';
 
   if (!GAS_URL) {
-    // No GAS URL yet — use localStorage as fallback
+    // Try localStorage first
     try {
       const stored = localStorage.getItem('marcal_local');
-      data = stored ? JSON.parse(stored) : defaultData();
+      if (stored) {
+        data = JSON.parse(stored);
+      } else {
+        // Try recovering from Claude's old backend (window.storage)
+        try {
+          const oldKeys = ['marcal_v3','marcal_v2','marcal_v1'];
+          for (const key of oldKeys) {
+            const r = await window.storage.get(key);
+            if (r && r.value) {
+              data = JSON.parse(r.value);
+              // Migrate to localStorage immediately
+              localStorage.setItem('marcal_local', r.value);
+              console.log('Recovered data from Claude backend key:', key);
+              break;
+            }
+          }
+        } catch(e) { /* window.storage not available outside Claude */ }
+        if (!data) data = defaultData();
+      }
     } catch(e) { data = defaultData(); }
     data.rows.forEach(r => { if (r.archived===undefined) r.archived=false; });
     data.sections.forEach(s => { if (s.archived===undefined) s.archived=false; });
@@ -432,22 +450,34 @@ async function load() {
   try {
     const res = await fetch(GAS_URL + '?action=load', { method: 'GET' });
     const json = await res.json();
-    if (json.ok) {
+    if (json.ok && json.data) {
       data = json.data;
-      if (!data.sections) data = defaultData();
-      data.rows.forEach(r => { if (r.archived===undefined) r.archived=false; });
-      data.sections.forEach(s => { if (s.archived===undefined) s.archived=false; });
+      // Save a fresh cache to localStorage every successful load
+      try { localStorage.setItem('marcal_local', JSON.stringify(data)); } catch(e){}
     } else {
-      data = defaultData();
+      throw new Error('Bad response from Sheets');
     }
   } catch(e) {
-    console.warn('Could not reach Google Sheets, using defaults', e);
-    data = defaultData();
+    console.warn('Could not reach Google Sheets, trying local cache...', e);
+    // NEVER fall back to defaultData — use localStorage cache instead
+    try {
+      const cached = localStorage.getItem('marcal_local');
+      if (cached) {
+        data = JSON.parse(cached);
+        document.getElementById('slabel').textContent = 'Offline (cached)';
+      } else {
+        // Truly no data anywhere — only then use defaults
+        data = defaultData();
+        document.getElementById('slabel').textContent = 'No data found';
+      }
+    } catch(e2) { data = defaultData(); }
   }
-  document.getElementById('sdot').className = 'save-dot';
-  document.getElementById('slabel').textContent = 'All saved';
+  data.rows.forEach(r => { if (r.archived===undefined) r.archived=false; });
+  data.sections.forEach(s => { if (s.archived===undefined) s.archived=false; });
+  document.getElementById('sdot').className = 'save-dot saved';
+  document.getElementById('slabel').textContent = document.getElementById('slabel').textContent === 'Offline (cached)' ? 'Offline (cached)' : 'All saved';
   render(); updateTag();
-  setTimeout(scrollToToday, 300); // auto-scroll to today after render
+  setTimeout(scrollToToday, 300);
 }
 
 // Debounce saves so rapid changes don't spam the API
