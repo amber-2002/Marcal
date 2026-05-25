@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',system-ui,sans-serif;background:#eeedf5;color:#1a1a1a;font-size:13px}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#eeedf5;color:#1a1a1a;font-size:13px;margin:0;padding:0}
 :root{
   --purple:#6C63E8;--purple-dark:#5a52d0;
   --yellow:#F5C842;--yellow-text:#7a5e00;
@@ -18,7 +18,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#eeedf5;color:#1a1a1a
   --border:#e5e3dc;--row-odd:#fff;--row-even:#f7f6f2;
   --sec1:#6C63E8;--sec2:#5a52d0;--sec3:#4e46ba;--sec4:#433ca6;
 }
-#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
 
 /* TOPBAR */
 .topbar{
@@ -71,23 +71,26 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#eeedf5;color:#1a1a1a
 .btn-admin{background:rgba(108,99,232,.3);color:#c4c0ff;border-color:rgba(108,99,232,.5);font-weight:600}
 
 /* CALENDAR WRAP — fills remaining height, scrolls */
-.cal-wrap{flex:1;overflow:auto;padding:10px 16px 16px}
-.cal-table{min-width:800px;width:100%;border-collapse:separate;border-spacing:0}
+.cal-wrap{flex:1;overflow:auto}
+.cal-table{border-collapse:separate;border-spacing:0}
 
 /* HEADER — alternating month colors */
 .month-th{color:#fff;text-align:center;font-size:11px;font-weight:700;padding:6px 4px;letter-spacing:.5px;
   text-shadow:0 1px 3px rgba(0,0,0,.3);}
 .month-th.m-odd{background:linear-gradient(180deg,#7b74f5 0%,#5a52d0 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -2px 0 rgba(0,0,0,.15)}
 .month-th.m-even{background:linear-gradient(180deg,#6560e0 0%,#4840c0 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),inset 0 -2px 0 rgba(0,0,0,.15)}
-.label-th-top{width:160px;min-width:160px;background:#fff !important;border-right:1px solid var(--border);vertical-align:middle}
+.label-th-top{width:var(--label-w,160px);min-width:var(--label-w,160px);background:#fff !important;border-right:1px solid var(--border);vertical-align:middle;position:sticky;left:0;z-index:10}
 .week-th{text-align:center;font-size:10px;color:#888;padding:4px 2px;font-weight:500;min-width:66px;white-space:nowrap}
 .week-th.m-odd-bg{background:#eeedf8}
 .week-th.m-even-bg{background:#e6e4f4}
 .week-th.today{background:#f0eeff;color:var(--purple);font-weight:700}
-/* label-th-week removed — covered by rowspan */
+.label-th-week{width:var(--label-w,160px);min-width:var(--label-w,160px);background:#fff !important;border-right:1px solid var(--border);position:sticky;left:0;z-index:10}
 
 /* SECTION ROWS */
 .section-td{color:#fff;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;height:28px;vertical-align:middle;padding:0 12px;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.12);
+  text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.section-label-td{color:#fff;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;height:28px;vertical-align:middle;padding:0 12px;
   box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.12);
   text-shadow:0 1px 2px rgba(0,0,0,.25)}
 .section-td .sec-inner{display:flex;align-items:center;gap:7px;height:100%}
@@ -95,10 +98,18 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#eeedf5;color:#1a1a1a
 /* DATA ROWS — compact */
 .data-row td{border-bottom:1px solid var(--border);height:32px;vertical-align:middle}
 .data-row:nth-child(odd) td{background:var(--row-odd)}
-.data-row:nth-child(even) td{background:var(--row-even)}
-.data-row.archived-row td{background:#f5f5f5 !important;opacity:.5}
+.data-row:nth-child(odd) .data-row:nth-child(even) td{background:var(--row-even)}
+.data-row:nth-child(even) .data-row.archived-row td{background:#f5f5f5 !important;opacity:.5}
 
-.row-label-td{padding:0 8px;white-space:nowrap;position:sticky;left:0;z-index:5;background:inherit;border-right:1px solid var(--border);vertical-align:middle;width:160px;min-width:160px;max-width:160px}
+.row-label-td{padding:0 8px;white-space:nowrap;position:sticky;left:0;z-index:5;background:var(--row-odd);border-right:1px solid var(--border);vertical-align:middle;width:var(--label-w,160px);min-width:var(--label-w,160px);max-width:var(--label-w,160px)}
+.data-row:nth-child(even) > .row-label-td{background:var(--row-even) !important}
+.data-row:nth-child(odd) > .row-label-td{background:var(--row-odd) !important}
+.data-row:nth-child(even) 
+.data-row:nth-child(odd) 
+.col-resizer{position:absolute;right:-4px;top:0;bottom:0;width:8px;cursor:col-resize;z-index:20;display:flex;align-items:center;justify-content:center;touch-action:none}
+.col-resizer::after{content:'⋮';color:var(--purple);font-size:14px;opacity:0;transition:opacity .2s;line-height:1}
+.row-label-td:hover .col-resizer::after{opacity:0.4}
+.col-resizer:hover::after{opacity:1 !important}
 .row-label-inner{display:flex;align-items:center;gap:5px;height:100%}
 .row-drag-handle{cursor:grab;color:#ccc;opacity:0;font-size:13px;line-height:1;flex-shrink:0;user-select:none;transition:opacity .15s;padding:0 2px}
 .data-row:hover .row-drag-handle{opacity:1}
@@ -151,6 +162,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#eeedf5;color:#1a1a1a
 .section-row:hover .sec-actions{opacity:1}
 .sec-btn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:4px;font-size:9px;font-weight:600;padding:2px 6px;cursor:pointer;font-family:inherit;transition:all .15s;line-height:1.4}
 .sec-btn:hover{background:rgba(255,255,255,.35)}
+.sec-drag{cursor:grab;font-size:13px;margin-right:2px;user-select:none;flex-shrink:0}
+.sec-drop-above td{box-shadow:inset 0 3px 0 0 #fff}
+.sec-drop-below td{box-shadow:inset 0 -3px 0 0 #fff}
 
 /* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
@@ -516,38 +530,44 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 function render(){ renderHead(); renderBody(); }
 
 function renderHead() {
-  // Build month spans with alternating color index
+  // Count weeks per month
   const monthOrder=[], seen={};
   WEEKS.forEach((w,i)=>{
-    const m=w.month;
-    if(!seen[m]){seen[m]={label:MONTHS[m],count:0,idx:monthOrder.length};monthOrder.push(seen[m]);}
-    seen[m].count++;
+    const key = w.month + '-' + w.mon.getFullYear();
+    if(!seen[key]){
+      seen[key]={label:MONTHS[w.month],year:w.mon.getFullYear(),count:0,idx:monthOrder.length};
+      monthOrder.push(seen[key]);
+    }
+    seen[key].count++;
   });
 
-  const logoCell = `<th class="label-th-top" rowspan="2" style="padding:4px 8px;vertical-align:middle;background:#fff;border-right:1px solid var(--border)">
-    <img src="${LOGO_SRC}" alt="chargEV" style="height:32px;width:auto;display:block;margin:0 auto;object-fit:contain">
-    <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;color:#aaa;text-align:center;margin-top:2px;text-transform:uppercase">2026</div>
-  </th>`;
-  let mRow=`<tr>${logoCell}`;
+  // Row 1: label cell (rowspan=2) + month headers
+  const labelStyle = 'padding:4px 8px;vertical-align:middle;text-align:center;background:#fff;border-right:1px solid var(--border);position:sticky;left:0;z-index:10;width:var(--label-w,160px);min-width:var(--label-w,160px);max-width:var(--label-w,160px)';
+  let mRow = '<tr>'
+    + `<th class="label-th-top" rowspan="2" style="${labelStyle}">`
+    + `<img src="${LOGO_SRC}" alt="chargEV" style="height:24px;width:auto;display:block;margin:0 auto;object-fit:contain">`
+    + `</th>`;
   monthOrder.forEach((m,mi)=>{
-    mRow+=`<th class="month-th ${mi%2===0?'m-odd':'m-even'}" colspan="${m.count}">${m.label.toUpperCase()}</th>`;
+    mRow += `<th class="month-th ${mi%2===0?'m-odd':'m-even'}" colspan="${m.count}">${m.label.toUpperCase()} ${m.year}</th>`;
   });
-  mRow+='</tr>';
+  mRow += '</tr>';
 
-  // build month index per week
-  const weekMonthIdx=WEEKS.map(w=>{
-    return monthOrder.findIndex(m=>m.label===MONTHS[w.month]);
+  // Map each week to its month index for alternating colours
+  const weekMonthIdx = WEEKS.map(w => {
+    const key = w.month + '-' + w.mon.getFullYear();
+    return seen[key] ? seen[key].idx : 0;
   });
 
-  let wRow=`<tr>`;
+  // Row 2: NO label cell — covered by rowspan=2 above
+  let wRow = '<tr>';
   WEEKS.forEach((w,i)=>{
-    const mi=weekMonthIdx[i];
-    const cls=i===TODAY_WI?'week-th today':`week-th ${mi%2===0?'m-odd-bg':'m-even-bg'}`;
-    wRow+=`<th class="${cls}">${w.label}</th>`;
+    const mi = weekMonthIdx[i];
+    const cls = i===TODAY_WI ? 'week-th today' : `week-th ${mi%2===0?'m-odd-bg':'m-even-bg'}`;
+    wRow += `<th class="${cls}">${w.label}</th>`;
   });
-  wRow+='</tr>';
+  wRow += '</tr>';
 
-  document.getElementById('thead').innerHTML=mRow+wRow;
+  document.getElementById('thead').innerHTML = mRow + wRow;
 }
 
 // Section colors cycle
@@ -562,6 +582,12 @@ function renderBody() {
     const bg=`linear-gradient(135deg,${baseColor} 0%,${SEC_COLORS[(si+2)%SEC_COLORS.length]} 100%)`;
     const isArchived=sec.archived;
     const archiveLabel=isArchived?'Unarchive':'Archive';
+    const secDragHandle = isAdmin
+      ? `<span class="sec-drag" draggable="true"
+           ondragstart="secDragStart(event,'${sec.id}')"
+           ondragend="secDragEnd(event)"
+           title="Drag to reorder">⠿</span>`
+      : '';
     const secActions=isAdmin
       ?`<span class="sec-actions">
           <button class="sec-btn" onclick="openAddRowModal('${sec.id}')">+ Row</button>
@@ -570,27 +596,38 @@ function renderBody() {
           <button class="sec-btn" onclick="delSec('${sec.id}')">✕</button>
         </span>`
       :'';
-    html+=`<tr class="section-row"><td class="section-td" colspan="${WEEKS.length+1}" style="background:${bg}">
-      <div class="sec-inner">${isArchived?'📦 ':''}<span>${sec.label}</span>${secActions}</div>
-    </td></tr>`;
+    html+=`<tr class="section-row" data-sid="${sec.id}"
+      ondragover="secDragOver(event,this)" ondragleave="secDragLeave(this)" ondrop="secDropOn(event,this)">
+      <td class="section-label-td" style="background:${bg};position:sticky;left:0;z-index:6;width:var(--label-w,160px);min-width:var(--label-w,160px);max-width:var(--label-w,160px);border-right:1px solid rgba(255,255,255,.2)">
+        <div class="sec-inner">${secDragHandle}${isArchived?'📦 ':''}<span>${sec.label}</span></div>
+      </td>
+      <td class="section-td" colspan="${WEEKS.length}" style="background:${bg}">
+        <div style="display:flex;justify-content:flex-end">${secActions}</div>
+      </td></tr>`;
 
     const secRows=data.rows.filter(r=>r.sid===sec.id && (showArchived?true:!r.archived));
     secRows.forEach(row=>{ html+=renderRow(row); });
 
     if(isAdmin){
-      html+=`<tr class="section-add-row"><td colspan="${WEEKS.length+1}">
-        <button class="section-add-row-btn" onclick="openAddRowModal('${sec.id}')">
-          <span class="plus-circle">+</span> Add row to "${sec.label}"
-        </button></td></tr>`;
+      html+=`<tr class="section-add-row">
+        <td style="position:sticky;left:0;z-index:5;background:#fafaf8;border-right:1px solid var(--border)">
+          <button class="section-add-row-btn" onclick="openAddRowModal('${sec.id}')">
+            <span class="plus-circle">+</span> Add row
+          </button>
+        </td>
+        <td colspan="${WEEKS.length}"></td></tr>`;
     }
   });
 
   if(isAdmin){
-    html+=`<tr class="section-add-row" style="background:#f0eeff"><td colspan="${WEEKS.length+1}">
-      <button class="section-add-row-btn" onclick="openSectionModal()">
-        <span class="plus-circle" style="border-color:#a78bfa;color:#7c3aed">+</span>
-        <span style="color:#7c3aed">Add new section</span>
-      </button></td></tr>`;
+    html+=`<tr class="section-add-row" style="background:#f0eeff">
+      <td style="position:sticky;left:0;z-index:5;background:#f0eeff;border-right:1px solid var(--border)">
+        <button class="section-add-row-btn" onclick="openSectionModal()">
+          <span class="plus-circle" style="border-color:#a78bfa;color:#7c3aed">+</span>
+          <span style="color:#7c3aed">Add section</span>
+        </button>
+      </td>
+      <td colspan="${WEEKS.length}"></td></tr>`;
   }
 
   document.getElementById('tbody').innerHTML=html;
@@ -634,6 +671,7 @@ function renderRow(row) {
     ondrop="rowDrop(event,this)">
     <td class="row-label-td">
       <div class="row-label-inner">${dragHandle}${labelEl}${adminBtns}</div>
+      <div class="col-resizer" onmousedown="startColResize(event)"></div>
     </td>${cells}</tr>`;
 }
 
@@ -748,6 +786,74 @@ function rowDrop(e,tr) {
 function setupDropListeners() {
   // intentionally empty — listeners attached once in initListeners()
 }
+// ── SECTION DRAG ───────────────────────────────────────
+let draggingSec = null;
+function secDragStart(e, sid) {
+  draggingSec = sid;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', 'sec:' + sid);
+  e.stopPropagation();
+  setTimeout(() => {
+    document.querySelectorAll('.section-row').forEach(tr => {
+      if (tr.dataset.sid === sid) tr.style.opacity = '0.4';
+    });
+  }, 0);
+}
+function secDragEnd(e) {
+  draggingSec = null;
+  document.querySelectorAll('.section-row').forEach(tr => tr.style.opacity = '');
+  document.querySelectorAll('.sec-drop-above,.sec-drop-below').forEach(tr => {
+    tr.classList.remove('sec-drop-above','sec-drop-below');
+  });
+}
+
+function secDragOver(e, tr) {
+  if (!draggingSec) return;
+  e.preventDefault(); e.stopPropagation();
+  document.querySelectorAll('.sec-drop-above,.sec-drop-below').forEach(t => {
+    t.classList.remove('sec-drop-above','sec-drop-below');
+  });
+  const rect = tr.getBoundingClientRect();
+  tr.classList.add(e.clientY < rect.top + rect.height / 2 ? 'sec-drop-above' : 'sec-drop-below');
+}
+function secDragLeave(tr) {
+  tr.classList.remove('sec-drop-above','sec-drop-below');
+}
+function secDropOn(e, tr) {
+  e.preventDefault(); e.stopPropagation();
+  tr.classList.remove('sec-drop-above','sec-drop-below');
+  if (!draggingSec) return;
+  const targetSid = tr.dataset.sid;
+  if (!targetSid || draggingSec === targetSid) return;
+  const rect = tr.getBoundingClientRect();
+  const before = e.clientY < rect.top + rect.height / 2;
+  const fromIdx = data.sections.findIndex(s => s.id === draggingSec);
+  let toIdx = data.sections.findIndex(s => s.id === targetSid);
+  if (fromIdx === -1 || toIdx === -1) return;
+  const [moved] = data.sections.splice(fromIdx, 1);
+  toIdx = data.sections.findIndex(s => s.id === targetSid);
+  data.sections.splice(before ? toIdx : toIdx + 1, 0, moved);
+  save(); render();
+}
+
+// ── COL RESIZE ──────────────────────────────────────────
+let labelW = 160;
+function startColResize(e) {
+  e.preventDefault();
+  const startX = e.clientX;
+  const startW = labelW;
+  function onMove(e) {
+    labelW = Math.max(80, Math.min(300, startW + e.clientX - startX));
+    document.documentElement.style.setProperty('--label-w', labelW + 'px');
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
 function scrollToToday() {
   if (TODAY_WI < 0) return;
   // Find the today-col cell and scroll it into view
